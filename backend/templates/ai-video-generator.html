@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Generator | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <style>
+        .generator-section {
+            padding: calc(var(--nav-height) + 40px) 0 var(--section-padding);
+            min-height: 100vh;
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 40px;
+        }
+
+        .generator-panel {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .panel-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: var(--ai-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .panel-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .panel-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--text-primary);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--border-glow);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+            color: var(--text-primary);
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .style-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .style-option {
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .style-option:hover {
+            border-color: var(--border-glow);
+        }
+
+        .style-option.active {
+            border-color: #a78bfa;
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .style-option i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .style-option span {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: var(--ai-gradient);
+            border: none;
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .credits-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .preview-panel {
+            position: sticky;
+            top: calc(var(--nav-height) + 20px);
+        }
+
+        .video-preview-frame {
+            background: linear-gradient(145deg, #2a2a35, #1a1a22);
+            border-radius: 24px;
+            padding: 12px;
+            margin-bottom: 24px;
+        }
+
+        .video-screen {
+            background: #000;
+            border-radius: 16px;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-placeholder-content {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .video-placeholder-content i {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .example-chip {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 4px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .example-chip:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+        }
+
+        .recent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .recent-item {
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .recent-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 1200px) {
+            .generator-container {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .style-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .settings-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="ai-video-generator.html"><i
+                                class="bi bi-camera-reels me-1"></i> Video AI</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prompt-library.html"><i class="bi bi-book me-1"></i>
+                            Prompts</a></li>
+                    <li class="nav-item ms-2"><a href="dashboard.html" class="btn btn-glow"><i
+                                class="bi bi-speedometer2 me-1"></i> Dashboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="generator-section">
+        <div class="container">
+            <div class="generator-container">
+                <div class="generator-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon"><i class="bi bi-camera-reels"></i></div>
+                        <div>
+                            <h1 class="panel-title">AI Video Generator</h1>
+                            <p class="panel-subtitle">Create stunning videos from text in seconds</p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Your Video Prompt</label>
+                        <textarea class="form-control" id="videoPrompt"
+                            placeholder="Describe your video... e.g., 'A majestic eagle soaring through golden sunset clouds'"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Video Style</label>
+                        <div class="style-options">
+                            <div class="style-option active"><i
+                                    class="bi bi-camera-reels text-warning"></i><span>Cinematic</span></div>
+                            <div class="style-option"><i class="bi bi-stars text-info"></i><span>Anime</span></div>
+                            <div class="style-option"><i class="bi bi-eye text-success"></i><span>Realistic</span></div>
+                            <div class="style-option"><i class="bi bi-palette text-danger"></i><span>Cartoon</span>
+                            </div>
+                            <div class="style-option"><i class="bi bi-box text-primary"></i><span>3D Render</span></div>
+                            <div class="style-option"><i class="bi bi-film"
+                                    style="color:#d4a574;"></i><span>Vintage</span></div>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div><label class="form-label">Aspect Ratio</label><select class="form-select">
+                                <option>16:9 (Landscape)</option>
+                                <option>9:16 (Portrait)</option>
+                                <option>1:1 (Square)</option>
+                            </select></div>
+                        <div><label class="form-label">Quality</label><select class="form-select">
+                                <option>1080p HD</option>
+                                <option>720p</option>
+                                <option>4K Ultra HD</option>
+                            </select></div>
+                    </div>
+                    <div class="settings-row mb-4">
+                        <div><label class="form-label">Camera Motion</label><select class="form-select">
+                                <option>Static</option>
+                                <option>Pan</option>
+                                <option>Zoom In</option>
+                                <option>Orbit</option>
+                            </select></div>
+                        <div><label class="form-label">Duration</label><select class="form-select">
+                                <option>5 seconds</option>
+                                <option>10 seconds</option>
+                                <option>15 seconds</option>
+                                <option>30 seconds</option>
+                            </select></div>
+                    </div>
+                    <button class="generate-btn"><i class="bi bi-magic"></i> Generate Video</button>
+                    <div class="credits-info"><i class="bi bi-coin"></i><span>Uses <strong>2 credits</strong> • 47
+                            remaining</span></div>
+                    <div class="mt-4">
+                        <h6 class="text-secondary mb-2"><i class="bi bi-lightbulb me-2"></i>Try:</h6>
+                        <span class="example-chip">"astronaut on Mars"</span>
+                        <span class="example-chip">"koi fish in pond"</span>
+                        <span class="example-chip">"neon city night"</span>
+                    </div>
+                </div>
+                <div class="preview-panel">
+                    <div class="generator-panel">
+                        <h3 class="mb-3"><i class="bi bi-play-circle me-2"></i>Preview</h3>
+                        <div class="video-preview-frame">
+                            <div class="video-screen">
+                                <div class="video-placeholder-content"><i class="bi bi-camera-video"></i>
+                                    <p>Your video will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-light flex-grow-1" disabled><i
+                                    class="bi bi-download me-2"></i>Download</button>
+                            <button class="btn btn-outline-light flex-grow-1" disabled><i
+                                    class="bi bi-share me-2"></i>Share</button>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h5><i class="bi bi-clock-history me-2"></i>Recent</h5>
+                        <div class="recent-grid">
+                            <div class="recent-item"><img
+                                    src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=300&h=170&fit=crop"
+                                    alt="Recent"></div>
+                            <div class="recent-item"><img
+                                    src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&h=170&fit=crop"
+                                    alt="Recent"></div>
+                            <div class="recent-item"><img
+                                    src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=170&fit=crop"
+                                    alt="Recent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.style-option').forEach(o => o.addEventListener('click', function () {
+            document.querySelectorAll('.style-option').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+        }));
+        document.querySelectorAll('.example-chip').forEach(c => c.addEventListener('click', function () {
+            document.getElementById('videoPrompt').value = this.textContent;
+        }));
+    </script>
+</body>
+
+</html>

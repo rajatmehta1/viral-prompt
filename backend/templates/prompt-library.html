@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Viral Prompt Library - Discover and use viral AI prompts for images, videos, music and more">
+    <title>Prompt Library | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <style>
+        .library-section {
+            padding: calc(var(--nav-height) + 40px) 0 var(--section-padding);
+            min-height: 100vh;
+        }
+
+        .library-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .library-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .library-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .search-bar-large {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-bar-large input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 18px 60px 18px 24px;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            transition: var(--transition-normal);
+        }
+
+        .search-bar-large input:focus {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+            outline: none;
+        }
+
+        .search-bar-large button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .search-bar-large button:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .category-tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-tab:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border-color: var(--border-glow);
+        }
+
+        .category-tab.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .prompt-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .prompt-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .prompt-preview {
+            height: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prompt-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-slow);
+        }
+
+        .prompt-card:hover .prompt-preview img {
+            transform: scale(1.1);
+        }
+
+        .prompt-type-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .badge-image {
+            background: rgba(79, 172, 254, 0.85);
+            color: white;
+        }
+
+        .badge-video {
+            background: rgba(236, 72, 153, 0.85);
+            color: white;
+        }
+
+        .badge-music {
+            background: rgba(34, 197, 94, 0.85);
+            color: white;
+        }
+
+        .badge-text {
+            background: rgba(251, 191, 36, 0.85);
+            color: #000;
+        }
+
+        .prompt-content {
+            padding: 20px;
+        }
+
+        .prompt-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .prompt-text {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+            max-height: 80px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prompt-text::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+        }
+
+        .prompt-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .uses-count {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .prompt-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prompt-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            flex: 1;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-save {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .btn-save:hover {
+            background: rgba(236, 72, 153, 0.2);
+            border-color: #ec4899;
+            color: #ec4899;
+        }
+
+        .featured-section {
+            margin-bottom: 50px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 992px) {
+            .prompts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .prompts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .library-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-bar {
+                gap: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="explore.html"><i class="bi bi-compass me-1"></i>
+                            Explore</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="prompt-library.html"><i
+                                class="bi bi-book me-1"></i> Prompts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="trending.html"><i class="bi bi-fire me-1"></i>
+                            Trending</a></li>
+                    <li class="nav-item ms-2"><a href="signin.html" class="btn btn-glow"><i
+                                class="bi bi-box-arrow-in-right me-1"></i> Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="library-section">
+        <div class="container">
+            <div class="library-header">
+                <h1>Viral <span class="text-gradient">Prompt Library</span></h1>
+                <p>Discover and copy proven prompts that create viral content. Filter by type, category, or search for
+                    exactly what you need.</p>
+
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number">12,847</div>
+                        <div class="stat-label">Total Prompts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">2.1M</div>
+                        <div class="stat-label">Times Used</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4,521</div>
+                        <div class="stat-label">Creators</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-bar-large">
+                <input type="text" placeholder="Search prompts by keyword, style, or creator...">
+                <button><i class="bi bi-search"></i></button>
+            </div>
+
+            <div class="category-tabs">
+                <button class="category-tab active"><i class="bi bi-grid-3x3-gap"></i> All</button>
+                <button class="category-tab"><i class="bi bi-image"></i> Image</button>
+                <button class="category-tab"><i class="bi bi-camera-video"></i> Video</button>
+                <button class="category-tab"><i class="bi bi-music-note-beamed"></i> Music</button>
+                <button class="category-tab"><i class="bi bi-chat-quote"></i> Caption</button>
+                <button class="category-tab"><i class="bi bi-file-text"></i> Script</button>
+                <button class="category-tab"><i class="bi bi-stars"></i> AI Art</button>
+            </div>
+
+            <div class="featured-section">
+                <div class="section-heading">
+                    <h2><i class="bi bi-fire me-2 text-danger"></i>Trending Prompts</h2>
+                    <a href="#" class="btn btn-outline-light btn-sm">View All</a>
+                </div>
+
+                <div class="prompts-grid">
+                    <!-- Prompt Card 1 -->
+                    <div class="prompt-card">
+                        <div class="prompt-preview">
+                            <img src="https://images.unsplash.com/photo-1686191128892-3b37add4b844?w=400&h=300&fit=crop"
+                                alt="AI Art">
+                            <span class="prompt-type-badge badge-image"><i class="bi bi-image me-1"></i>Image</span>
+                        </div>
+                        <div class="prompt-content">
+                            <h3 class="prompt-title">Cinematic Portrait Master</h3>
+                            <div class="prompt-text">
+                                "A cinematic portrait of [subject], shot on Kodak Portra 400, golden hour lighting,
+                                shallow depth of field, bokeh background, professional photography, 8K resolution..."
+                            </div>
+                            <div class="prompt-meta">
+                                <div class="uses-count"><i class="bi bi-arrow-repeat"></i> 15.2K uses</div>
+                                <div class="prompt-tags">
+                                    <span class="prompt-tag">#portrait</span>
+                                    <span class="prompt-tag">#cinematic</span>
+                                </div>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-copy"><i class="bi bi-clipboard"></i> Copy Prompt</button>
+                                <button class="btn-save"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Card 2 -->
+                    <div class="prompt-card">
+                        <div class="prompt-preview">
+                            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop"
+                                alt="Video Prompt">
+                            <span class="prompt-type-badge badge-video"><i
+                                    class="bi bi-camera-video me-1"></i>Video</span>
+                        </div>
+                        <div class="prompt-content">
+                            <h3 class="prompt-title">Dreamy Product Showcase</h3>
+                            <div class="prompt-text">
+                                "Smooth cinematic camera movement around [product], floating in ethereal clouds, soft
+                                pastel lighting, dreamy atmosphere, 4K 60fps, professional commercial quality..."
+                            </div>
+                            <div class="prompt-meta">
+                                <div class="uses-count"><i class="bi bi-arrow-repeat"></i> 8.7K uses</div>
+                                <div class="prompt-tags">
+                                    <span class="prompt-tag">#product</span>
+                                    <span class="prompt-tag">#commercial</span>
+                                </div>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-copy"><i class="bi bi-clipboard"></i> Copy Prompt</button>
+                                <button class="btn-save"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Card 3 -->
+                    <div class="prompt-card">
+                        <div class="prompt-preview"
+                            style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-music-note-beamed" style="font-size: 4rem; color: white;"></i>
+                            <span class="prompt-type-badge badge-music"><i
+                                    class="bi bi-music-note me-1"></i>Music</span>
+                        </div>
+                        <div class="prompt-content">
+                            <h3 class="prompt-title">Lo-Fi Chill Beat Generator</h3>
+                            <div class="prompt-text">
+                                "Create a lo-fi hip hop beat, 85 BPM, jazzy piano chords, vinyl crackle, mellow bass,
+                                soft drums, perfect for studying, rainy day vibes, nostalgic mood..."
+                            </div>
+                            <div class="prompt-meta">
+                                <div class="uses-count"><i class="bi bi-arrow-repeat"></i> 12.4K uses</div>
+                                <div class="prompt-tags">
+                                    <span class="prompt-tag">#lofi</span>
+                                    <span class="prompt-tag">#chill</span>
+                                </div>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-copy"><i class="bi bi-clipboard"></i> Copy Prompt</button>
+                                <button class="btn-save"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Card 4 -->
+                    <div class="prompt-card">
+                        <div class="prompt-preview">
+                            <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=300&fit=crop"
+                                alt="Landscape">
+                            <span class="prompt-type-badge badge-image"><i class="bi bi-image me-1"></i>Image</span>
+                        </div>
+                        <div class="prompt-content">
+                            <h3 class="prompt-title">Epic Fantasy Landscape</h3>
+                            <div class="prompt-text">
+                                "Breathtaking fantasy landscape, floating islands, bioluminescent plants, double sunset,
+                                ethereal mist, hyper-detailed, Greg Rutkowski style, 8K wallpaper..."
+                            </div>
+                            <div class="prompt-meta">
+                                <div class="uses-count"><i class="bi bi-arrow-repeat"></i> 21.3K uses</div>
+                                <div class="prompt-tags">
+                                    <span class="prompt-tag">#fantasy</span>
+                                    <span class="prompt-tag">#landscape</span>
+                                </div>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-copy"><i class="bi bi-clipboard"></i> Copy Prompt</button>
+                                <button class="btn-save"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Card 5 -->
+                    <div class="prompt-card">
+                        <div class="prompt-preview"
+                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-chat-quote" style="font-size: 4rem; color: white;"></i>
+                            <span class="prompt-type-badge badge-text"><i class="bi bi-chat me-1"></i>Caption</span>
+                        </div>
+                        <div class="prompt-content">
+                            <h3 class="prompt-title">Viral Hook Generator</h3>
+                            <div class="prompt-text">
+                                "Generate 5 scroll-stopping hooks for [topic]. Each hook should create curiosity,
+                                include power words, and be under 10 words. Target audience: [audience]. Tone:
+                                [tone]..."
+                            </div>
+                            <div class="prompt-meta">
+                                <div class="uses-count"><i class="bi bi-arrow-repeat"></i> 45.8K uses</div>
+                                <div class="prompt-tags">
+                                    <span class="prompt-tag">#hooks</span>
+                                    <span class="prompt-tag">#viral</span>
+                                </div>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-copy"><i class="bi bi-clipboard"></i> Copy Prompt</button>
+                                <button class="btn-save"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Card 6 -->
+                    <div class="prompt-card">
+                        <div class="prompt-preview">
+                            <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=300&fit=crop"
+                                alt="Ocean">
+                            <span class="prompt-type-badge badge-video"><i
+                                    class="bi bi-camera-video me-1"></i>Video</span>
+                        </div>
+                        <div class="prompt-content">
+                            <h3 class="prompt-title">Nature Documentary Style</h3>
+                            <div class="prompt-text">
+                                "Cinematic nature footage of [subject], BBC documentary style, macro lens, slow motion
+                                120fps, David Attenborough narration style, epic orchestral music background..."
+                            </div>
+                            <div class="prompt-meta">
+                                <div class="uses-count"><i class="bi bi-arrow-repeat"></i> 6.9K uses</div>
+                                <div class="prompt-tags">
+                                    <span class="prompt-tag">#nature</span>
+                                    <span class="prompt-tag">#documentary</span>
+                                </div>
+                            </div>
+                            <div class="prompt-actions">
+                                <button class="btn-copy"><i class="bi bi-clipboard"></i> Copy Prompt</button>
+                                <button class="btn-save"><i class="bi bi-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <button class="btn btn-glow btn-lg"><i class="bi bi-plus-lg me-2"></i>Load More Prompts</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="margin-top: 0; padding-top: 0; border-top: none;">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Copy prompt functionality
+        document.querySelectorAll('.btn-copy').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const promptText = this.closest('.prompt-content').querySelector('.prompt-text').textContent.trim();
+                navigator.clipboard.writeText(promptText).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                    }, 2000);
+                });
+            });
+        });
+
+        // Category tabs
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

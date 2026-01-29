@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Viral Prompt - A Pinterest-style gallery for viral content, reels, and video embeddings">
+    <title>Viral Prompt | Discover Amazing Content</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <div class="brand-icon me-2">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="search-wrapper mx-auto">
+                    <div class="search-container">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search for viral content...">
+                    </div>
+                </div>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">
+                            <i class="bi bi-house-door-fill me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/reel-creator}">
+                            <i class="bi bi-film me-1"></i> AI Reels
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-collection-play me-1"></i> Videos
+                        </a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <button class="btn btn-glow">
+                            <i class="bi bi-plus-lg me-1"></i> Create
+                        </button>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a th:href="@{/signin}" class="btn btn-glow"
+                            style="background: transparent; border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="container text-center">
+            <h1 class="hero-title">
+                Discover <span class="text-gradient">Viral</span> Content
+            </h1>
+            <p class="hero-subtitle">
+                Explore trending reels, videos, and AI-generated content from TikTok, Instagram, and beyond
+            </p>
+            <div class="hero-tags">
+                <span class="tag-pill">#trending</span>
+                <span class="tag-pill">#viral</span>
+                <span class="tag-pill">#ai-generated</span>
+                <span class="tag-pill">#reels</span>
+                <span class="tag-pill">#tiktok</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Tabs -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="bi bi-grid-3x3-gap-fill"></i> All
+                </button>
+                <button class="filter-btn" data-filter="images">
+                    <i class="bi bi-image"></i> Images
+                </button>
+                <button class="filter-btn" data-filter="videos">
+                    <i class="bi bi-play-circle"></i> Videos
+                </button>
+                <button class="filter-btn" data-filter="reels">
+                    <i class="bi bi-film"></i> Reels
+                </button>
+                <button class="filter-btn" data-filter="ai">
+                    <i class="bi bi-stars"></i> AI Created
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pinterest Grid -->
+    <main class="pinterest-grid-section">
+        <div class="container-fluid px-4">
+            <div class="masonry-grid" id="pinterestGrid">
+
+                <!-- Card 1 - Image -->
+                <div class="grid-item" data-type="images">
+                    <div class="pin-card">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400&h=600&fit=crop"
+                                alt="Mountain Sunset">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge image-badge">
+                                <i class="bi bi-image"></i>
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Majestic Mountain Sunset</h6>
+                            <p class="pin-description">Breathtaking view of sunset over the peaks</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=1" alt="Author" class="author-avatar">
+                                    <span>@naturelover</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 2.4k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 - Video Embed (TikTok style) -->
+                <div class="grid-item grid-item-tall" data-type="reels">
+                    <div class="pin-card">
+                        <div class="pin-media video-container">
+                            <div class="video-placeholder">
+                                <div class="video-preview"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="bi bi-play-circle-fill play-icon"></i>
+                                    <div class="video-info">
+                                        <span class="platform-icon tiktok"><i class="bi bi-tiktok"></i></span>
+                                        <span class="duration">0:45</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="content-badge reel-badge">
+                                <i class="bi bi-film"></i> Reel
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Dance Challenge Viral Hit</h6>
+                            <p class="pin-description">This dance move is breaking the internet! 🔥</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=2" alt="Author" class="author-avatar">
+                                    <span>@danceking</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-eye"></i> 1.2M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 - AI Generated -->
+                <div class="grid-item" data-type="ai">
+                    <div class="pin-card ai-glow">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1686191128892-3b37add4b844?w=400&h=400&fit=crop"
+                                alt="AI Art">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge ai-badge">
+                                <i class="bi bi-stars"></i> AI
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Cyberpunk Dreams</h6>
+                            <p class="pin-description">AI-generated futuristic cityscape</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=3" alt="Author" class="author-avatar">
+                                    <span>@ai_artist</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 5.7k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 - Image -->
+                <div class="grid-item grid-item-medium" data-type="images">
+                    <div class="pin-card">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=500&fit=crop"
+                                alt="Ocean Waves">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge image-badge">
+                                <i class="bi bi-image"></i>
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Turquoise Paradise</h6>
+                            <p class="pin-description">Crystal clear ocean waves at sunrise</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=4" alt="Author" class="author-avatar">
+                                    <span>@oceanvibes</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 8.9k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 - Instagram Reel -->
+                <div class="grid-item grid-item-tall" data-type="reels">
+                    <div class="pin-card">
+                        <div class="pin-media video-container">
+                            <div class="video-placeholder">
+                                <div class="video-preview"
+                                    style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    <i class="bi bi-play-circle-fill play-icon"></i>
+                                    <div class="video-info">
+                                        <span class="platform-icon instagram"><i class="bi bi-instagram"></i></span>
+                                        <span class="duration">0:30</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="content-badge reel-badge">
+                                <i class="bi bi-film"></i> Reel
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Travel Vlog: Tokyo Nights</h6>
+                            <p class="pin-description">Exploring neon-lit streets of Shibuya 🇯🇵</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=5" alt="Author" class="author-avatar">
+                                    <span>@wanderlust</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-eye"></i> 890K</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 - Video -->
+                <div class="grid-item" data-type="videos">
+                    <div class="pin-card">
+                        <div class="pin-media video-container">
+                            <div class="video-placeholder">
+                                <div class="video-preview"
+                                    style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                    <i class="bi bi-play-circle-fill play-icon"></i>
+                                    <div class="video-info">
+                                        <span class="platform-icon youtube"><i class="bi bi-youtube"></i></span>
+                                        <span class="duration">5:23</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="content-badge video-badge">
+                                <i class="bi bi-play-fill"></i>
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Cooking Tutorial: Pasta</h6>
+                            <p class="pin-description">Quick and easy homemade pasta recipe</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=6" alt="Author" class="author-avatar">
+                                    <span>@cheflife</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-eye"></i> 450K</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7 - AI Generated -->
+                <div class="grid-item grid-item-medium" data-type="ai">
+                    <div class="pin-card ai-glow">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=500&fit=crop"
+                                alt="AI Generated">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge ai-badge">
+                                <i class="bi bi-stars"></i> AI
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Abstract Digital Art</h6>
+                            <p class="pin-description">Midjourney masterpiece with vibrant colors</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=7" alt="Author" class="author-avatar">
+                                    <span>@digital_dreams</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 12k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8 - Image -->
+                <div class="grid-item" data-type="images">
+                    <div class="pin-card">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400&h=350&fit=crop"
+                                alt="Forest">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge image-badge">
+                                <i class="bi bi-image"></i>
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Misty Forest Morning</h6>
+                            <p class="pin-description">Serene foggy forest landscape</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=8" alt="Author" class="author-avatar">
+                                    <span>@forest_walker</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 3.2k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 9 - TikTok Reel -->
+                <div class="grid-item grid-item-tall" data-type="reels">
+                    <div class="pin-card">
+                        <div class="pin-media video-container">
+                            <div class="video-placeholder">
+                                <div class="video-preview"
+                                    style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                    <i class="bi bi-play-circle-fill play-icon"></i>
+                                    <div class="video-info">
+                                        <span class="platform-icon tiktok"><i class="bi bi-tiktok"></i></span>
+                                        <span class="duration">1:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="content-badge reel-badge">
+                                <i class="bi bi-film"></i> Reel
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Fitness Transformation</h6>
+                            <p class="pin-description">30-day workout challenge results 💪</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=9" alt="Author" class="author-avatar">
+                                    <span>@fitfam</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-eye"></i> 2.1M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 10 - Image -->
+                <div class="grid-item grid-item-medium" data-type="images">
+                    <div class="pin-card">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=450&fit=crop"
+                                alt="Nature">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge image-badge">
+                                <i class="bi bi-image"></i>
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Golden Hour Magic</h6>
+                            <p class="pin-description">Perfect lighting in the wilderness</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=10" alt="Author" class="author-avatar">
+                                    <span>@photography</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 6.8k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 11 - AI Video -->
+                <div class="grid-item grid-item-tall" data-type="ai">
+                    <div class="pin-card ai-glow">
+                        <div class="pin-media video-container">
+                            <div class="video-placeholder">
+                                <div class="video-preview"
+                                    style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);">
+                                    <i class="bi bi-play-circle-fill play-icon"></i>
+                                    <div class="video-info">
+                                        <span class="platform-icon ai-icon"><i class="bi bi-stars"></i></span>
+                                        <span class="duration">0:15</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="content-badge ai-badge">
+                                <i class="bi bi-stars"></i> AI Reel
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">AI Generated Reel</h6>
+                            <p class="pin-description">Watch how AI creates amazing content</p>
+                            <a th:href="@{/reel-creator}" class="btn btn-sm btn-glow w-100 mt-2">
+                                <i class="bi bi-eye me-1"></i> View Prompt
+                            </a>
+                            <div class="pin-footer mt-2">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=11" alt="Author" class="author-avatar">
+                                    <span>@ai_creator</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-eye"></i> 550K</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 12 - Image -->
+                <div class="grid-item" data-type="images">
+                    <div class="pin-card">
+                        <div class="pin-media">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=380&fit=crop"
+                                alt="Mountains">
+                            <div class="pin-overlay">
+                                <div class="pin-actions">
+                                    <button class="action-btn"><i class="bi bi-heart"></i></button>
+                                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                                </div>
+                            </div>
+                            <span class="content-badge image-badge">
+                                <i class="bi bi-image"></i>
+                            </span>
+                        </div>
+                        <div class="pin-content">
+                            <h6 class="pin-title">Alpine Adventure</h6>
+                            <p class="pin-description">Breathtaking mountain peaks at dawn</p>
+                            <div class="pin-footer">
+                                <div class="pin-author">
+                                    <img src="https://i.pravatar.cc/40?img=12" alt="Author" class="author-avatar">
+                                    <span>@explorer</span>
+                                </div>
+                                <div class="pin-stats">
+                                    <span><i class="bi bi-heart-fill text-danger"></i> 4.5k</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="footer-brand">
+                        <div class="brand-icon me-2">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+                    </div>
+                    <p class="footer-text mt-3">
+                        Discover and share the most viral content from across the web.
+                        From TikTok to Instagram, all in one place.
+                    </p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h6 class="footer-heading">Explore</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Trending</a></li>
+                        <li><a href="#">Popular</a></li>
+                        <li><a href="#">New</a></li>
+                        <li><a href="#">Collections</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h6 class="footer-heading">Content</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Images</a></li>
+                        <li><a href="#">Videos</a></li>
+                        <li><a href="#">Reels</a></li>
+                        <li><a th:href="@{/reel-creator}">AI Created</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h6 class="footer-heading">Stay Updated</h6>
+                    <div class="newsletter-form">
+                        <input type="email" class="form-control" placeholder="Your email address">
+                        <button class="btn btn-glow mt-2 w-100">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>

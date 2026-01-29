@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Reel Creator - View AI-generated reels and the prompts used to create them">
+    <title>AI Reel Creator | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/reel-creator}"><i
+                                class="bi bi-film me-1"></i> AI Reels</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-collection-play me-1"></i>
+                            Videos</a></li>
+                    <li class="nav-item ms-2"><button class="btn btn-glow"><i class="bi bi-plus-lg me-1"></i>
+                            Create</button></li>
+                    <li class="nav-item ms-2">
+                        <a th:href="@{/signin}" class="btn btn-glow"
+                            style="background: transparent; border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="reel-creator-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="tag-pill mb-3"><i class="bi bi-stars me-1"></i> AI-Powered Content</span>
+                <h1 class="hero-title">AI <span class="text-gradient">Reel Creator</span></h1>
+                <p class="hero-subtitle">Watch AI-generated reels and discover the prompts that brought them to life</p>
+            </div>
+
+            <div class="reel-container">
+                <!-- Left: Reel Player -->
+                <div class="reel-player-wrapper">
+                    <div class="reel-phone-frame">
+                        <div class="reel-screen">
+                            <div class="reel-video-placeholder">
+                                <i class="bi bi-play-circle-fill play-icon"></i>
+
+                                <!-- Side Actions -->
+                                <div class="reel-actions-side">
+                                    <div class="reel-action-item">
+                                        <button><i class="bi bi-heart-fill"></i></button>
+                                        <span>24.5K</span>
+                                    </div>
+                                    <div class="reel-action-item">
+                                        <button><i class="bi bi-chat-fill"></i></button>
+                                        <span>1.2K</span>
+                                    </div>
+                                    <div class="reel-action-item">
+                                        <button><i class="bi bi-send-fill"></i></button>
+                                        <span>Share</span>
+                                    </div>
+                                    <div class="reel-action-item">
+                                        <button><i class="bi bi-bookmark-fill"></i></button>
+                                        <span>Save</span>
+                                    </div>
+                                </div>
+
+                                <!-- Bottom Overlay -->
+                                <div class="reel-content-overlay">
+                                    <div class="reel-user-info">
+                                        <img src="https://i.pravatar.cc/40?img=15" alt="AI Creator">
+                                        <span>@ai_magic_creator</span>
+                                    </div>
+                                    <p class="reel-caption">
+                                        ✨ This entire reel was generated by AI!
+                                        <br>Check out the prompt used to create it →
+                                        <br><br>
+                                        #AIContent #ViralPrompt #GenerativeAI
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platform Badges -->
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <span class="meta-tag"><i class="bi bi-tiktok"></i> TikTok Ready</span>
+                        <span class="meta-tag"><i class="bi bi-instagram"></i> Instagram Ready</span>
+                    </div>
+                </div>
+
+                <!-- Right: Prompt Section -->
+                <div class="prompt-section">
+                    <div class="prompt-header">
+                        <div class="prompt-icon"><i class="bi bi-stars"></i></div>
+                        <div class="prompt-title">
+                            <h3>AI Generation Prompt</h3>
+                            <p>The creative instructions used to generate this reel</p>
+                        </div>
+                    </div>
+
+                    <textarea class="prompt-textarea" readonly>Create a 15-second vertical video reel with the following specifications:
+
+VISUAL STYLE:
+- Dreamy, ethereal aesthetic with soft purple and pink gradients
+- Smooth camera movements with subtle zoom transitions
+- Floating particles and light rays for magical atmosphere
+- Modern minimalist design with elegant typography
+
+CONTENT:
+- Opening: Eye-catching hook with animated text "The Future is AI"
+- Middle: Showcase 3 AI-generated art pieces morphing into each other
+- Ending: Call-to-action with glowing subscribe button
+
+MUSIC/AUDIO:
+- Trending lo-fi beat with ambient synthesizer
+- Soft whoosh sound effects for transitions
+- Duration: 15 seconds, optimized for social platforms
+
+MOOD:
+- Inspirational, futuristic, and visually captivating
+- Target audience: Tech enthusiasts and digital creators
+- Goal: Maximum engagement and shareability
+
+TECHNICAL:
+- Resolution: 1080x1920 (9:16 vertical)
+- Frame rate: 30fps
+- Export format: MP4 with H.264 codec</textarea>
+
+                    <div class="prompt-meta">
+                        <span class="meta-tag"><i class="bi bi-cpu"></i> GPT-4 Vision</span>
+                        <span class="meta-tag"><i class="bi bi-film"></i> Sora AI</span>
+                        <span class="meta-tag"><i class="bi bi-clock"></i> Generated in 45s</span>
+                        <span class="meta-tag"><i class="bi bi-aspect-ratio"></i> 9:16 Vertical</span>
+                    </div>
+
+                    <div class="prompt-actions">
+                        <button class="btn btn-outline-glow">
+                            <i class="bi bi-clipboard me-2"></i> Copy Prompt
+                        </button>
+                        <button class="btn btn-glow btn-glow-lg">
+                            <i class="bi bi-magic me-2"></i> Generate Similar
+                        </button>
+                    </div>
+
+                    <!-- Additional Info Cards -->
+                    <div class="row mt-4 g-3">
+                        <div class="col-6">
+                            <div class="meta-tag w-100 justify-content-center flex-column py-3">
+                                <i class="bi bi-eye fs-4 mb-1"></i>
+                                <strong>1.2M</strong>
+                                <small class="text-muted">Views</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="meta-tag w-100 justify-content-center flex-column py-3">
+                                <i class="bi bi-heart fs-4 mb-1"></i>
+                                <strong>24.5K</strong>
+                                <small class="text-muted">Likes</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; margin-top: 0; padding-top: 0;">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>

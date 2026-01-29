@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caption Generator | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <style>
+        .page-header {
+            padding: calc(var(--nav-height) + 60px) 0 40px;
+            text-align: center;
+        }
+
+        .creator-section {
+            padding: 0 0 80px;
+        }
+
+        .caption-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .caption-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .platform-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .platform-btn {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-secondary);
+        }
+
+        .platform-btn:hover,
+        .platform-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .platform-btn i {
+            font-size: 1.2rem;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text-primary);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-glow);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+        }
+
+        .caption-results {
+            display: grid;
+            gap: 16px;
+        }
+
+        .caption-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 3px solid;
+        }
+
+        .caption-item.engaging {
+            border-color: #a78bfa;
+        }
+
+        .caption-item.funny {
+            border-color: #fbbf24;
+        }
+
+        .caption-item.professional {
+            border-color: #60a5fa;
+        }
+
+        .caption-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .caption-hashtags {
+            color: #a78bfa;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .caption-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .caption-style {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-muted);
+        }
+
+        .caption-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .caption-actions button {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition-fast);
+        }
+
+        .caption-actions button:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="script-writer.html"><i
+                                class="bi bi-file-earmark-text me-1"></i> Script Writer</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="caption-generator.html"><i
+                                class="bi bi-chat-quote me-1"></i> Captions</a></li>
+                    <li class="nav-item ms-2"><a href="signin.html" class="btn btn-glow"><i
+                                class="bi bi-box-arrow-in-right me-1"></i> Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <span class="tag-pill mb-3"><i class="bi bi-chat-quote me-1"></i> AI Creator Tool</span>
+            <h1 class="hero-title">Caption <span class="text-gradient">Generator</span></h1>
+            <p class="hero-subtitle">Generate viral captions and hashtags for social media</p>
+        </div>
+    </section>
+
+    <section class="creator-section">
+        <div class="container">
+            <div class="caption-container">
+                <div class="caption-card">
+                    <h5 class="mb-3">Select Platform</h5>
+                    <div class="platform-selector">
+                        <div class="platform-btn active"><i class="bi bi-instagram"></i> Instagram</div>
+                        <div class="platform-btn"><i class="bi bi-tiktok"></i> TikTok</div>
+                        <div class="platform-btn"><i class="bi bi-twitter-x"></i> Twitter/X</div>
+                        <div class="platform-btn"><i class="bi bi-linkedin"></i> LinkedIn</div>
+                        <div class="platform-btn"><i class="bi bi-youtube"></i> YouTube</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary">Describe your content</label>
+                        <textarea class="form-control" rows="3"
+                            placeholder="e.g., Photo of sunset at the beach with friends..."></textarea>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label class="form-label text-secondary">Tone</label>
+                            <select class="form-select">
+                                <option>Casual & Fun</option>
+                                <option>Professional</option>
+                                <option>Inspirational</option>
+                                <option>Humorous</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary">Number of captions</label>
+                            <select class="form-select">
+                                <option selected>3 variations</option>
+                                <option>5 variations</option>
+                                <option>10 variations</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-glow w-100"><i class="bi bi-magic me-2"></i> Generate Captions</button>
+                </div>
+
+                <h5 class="mb-3"><i class="bi bi-stars me-2 text-gradient"></i>Generated Captions</h5>
+                <div class="caption-results">
+                    <div class="caption-item engaging">
+                        <p class="caption-text">Chasing sunsets and making memories with my favorite people 🌅✨ There's
+                            nothing quite like watching the sky paint itself in a million colors.</p>
+                        <p class="caption-hashtags">#SunsetVibes #BeachLife #GoldenHour #FriendsForever #MakingMemories
+                            #NatureLovers</p>
+                        <div class="caption-meta">
+                            <span class="caption-style">Engaging</span>
+                            <div class="caption-actions">
+                                <button><i class="bi bi-clipboard"></i> Copy</button>
+                                <button><i class="bi bi-heart"></i> Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="caption-item funny">
+                        <p class="caption-text">POV: You're debating whether to post another sunset pic and your friends
+                            are like "just do it" 😂🌊</p>
+                        <p class="caption-hashtags">#SunsetAddict #BeachBum #NoFilter #SquadGoals #MainCharacterEnergy
+                        </p>
+                        <div class="caption-meta">
+                            <span class="caption-style">Humorous</span>
+                            <div class="caption-actions">
+                                <button><i class="bi bi-clipboard"></i> Copy</button>
+                                <button><i class="bi bi-heart"></i> Save</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="caption-item professional">
+                        <p class="caption-text">Grateful for moments like these. The best things in life aren't
+                            things—they're the people you share them with. 💫</p>
+                        <p class="caption-hashtags">#Gratitude #LifeIsBeautiful #PreciousMoments #BeachSunset
+                            #Friendship</p>
+                        <div class="caption-meta">
+                            <span class="caption-style">Inspirational</span>
+                            <div class="caption-actions">
+                                <button><i class="bi bi-clipboard"></i> Copy</button>
+                                <button><i class="bi bi-heart"></i> Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; margin-top: 0; padding-top: 0;">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

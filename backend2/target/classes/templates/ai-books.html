@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Books | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <style>
+        .page-header {
+            padding: calc(var(--nav-height) + 60px) 0 40px;
+            text-align: center;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            padding: 0 0 80px;
+        }
+
+        .book-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .book-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .book-cover {
+            aspect-ratio: 2/3;
+            position: relative;
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            background: var(--ai-gradient);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .book-info {
+            padding: 20px;
+        }
+
+        .book-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .book-author {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .book-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .genre-tag {
+            padding: 4px 10px;
+            background: rgba(102, 126, 234, 0.15);
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #a78bfa;
+            margin-right: 6px;
+        }
+
+        .book-rating {
+            color: #fbbf24;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/ai-music}"><i
+                                class="bi bi-music-note-beamed me-1"></i> AI Music</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/ai-books}"><i class="bi bi-book me-1"></i>
+                            AI Books</a></li>
+                    <li class="nav-item ms-2"><a th:href="@{/signin}" class="btn btn-glow"><i
+                                class="bi bi-box-arrow-in-right me-1"></i> Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <span class="tag-pill mb-3"><i class="bi bi-book me-1"></i> AI-Written Content</span>
+            <h1 class="hero-title">AI <span class="text-gradient">Books</span></h1>
+            <p class="hero-subtitle">Novels, short stories, and scripts written by AI</p>
+        </div>
+    </section>
+
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-tabs">
+                <button class="filter-btn active"><i class="bi bi-grid-3x3-gap-fill"></i> All</button>
+                <button class="filter-btn"><i class="bi bi-book"></i> Novels</button>
+                <button class="filter-btn"><i class="bi bi-journal-text"></i> Short Stories</button>
+                <button class="filter-btn"><i class="bi bi-file-earmark-text"></i> Scripts</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="books-grid">
+            <div class="book-card">
+                <div class="book-cover">
+                    <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&h=600&fit=crop"
+                        alt="Book">
+                    <span class="book-badge"><i class="bi bi-stars me-1"></i> AI</span>
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">The Last Algorithm</h5>
+                    <p class="book-author">by GPT-Novelist</p>
+                    <div class="book-meta"><span><i class="bi bi-file-text"></i> 324 pages</span><span><i
+                                class="bi bi-eye"></i> 45K</span></div>
+                    <span class="genre-tag">Sci-Fi</span><span class="genre-tag">Thriller</span>
+                    <div class="book-rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                        4.5</div>
+                </div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover">
+                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop"
+                        alt="Book">
+                    <span class="book-badge"><i class="bi bi-stars me-1"></i> AI</span>
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">Whispers in the Code</h5>
+                    <p class="book-author">by Claude-Writer</p>
+                    <div class="book-meta"><span><i class="bi bi-file-text"></i> 156 pages</span><span><i
+                                class="bi bi-eye"></i> 28K</span></div>
+                    <span class="genre-tag">Horror</span><span class="genre-tag">Short Stories</span>
+                    <div class="book-rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i> 4.0
+                    </div>
+                </div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover">
+                    <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop"
+                        alt="Book">
+                    <span class="book-badge"><i class="bi bi-stars me-1"></i> AI</span>
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">Love in Neural Networks</h5>
+                    <p class="book-author">by Gemini-Romance</p>
+                    <div class="book-meta"><span><i class="bi bi-file-text"></i> 278 pages</span><span><i
+                                class="bi bi-eye"></i> 67K</span></div>
+                    <span class="genre-tag">Romance</span>
+                    <div class="book-rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        5.0</div>
+                </div>
+            </div>
+            <div class="book-card">
+                <div class="book-cover">
+                    <img src="https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?w=400&h=600&fit=crop"
+                        alt="Book">
+                    <span class="book-badge"><i class="bi bi-stars me-1"></i> AI</span>
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">Dragons of DigiRealm</h5>
+                    <p class="book-author">by Fantasy-AI</p>
+                    <div class="book-meta"><span><i class="bi bi-file-text"></i> 456 pages</span><span><i
+                                class="bi bi-eye"></i> 89K</span></div>
+                    <span class="genre-tag">Fantasy</span><span class="genre-tag">Adventure</span>
+                    <div class="book-rating"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                            class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                        4.7</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="border-top: none; margin-top: 0; padding-top: 0;">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

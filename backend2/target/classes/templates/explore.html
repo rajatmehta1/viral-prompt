@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <style>
+        .explore-section {
+            padding: calc(var(--nav-height) + 40px) 0 var(--section-padding);
+        }
+
+        .explore-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .explore-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .explore-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .category-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            position: relative;
+        }
+
+        .category-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-cover {
+            height: 140px;
+            overflow: hidden;
+        }
+
+        .category-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-slow);
+        }
+
+        .category-card:hover .category-cover img {
+            transform: scale(1.1);
+        }
+
+        .category-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 140px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .category-info {
+            padding: 16px;
+            text-align: center;
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .category-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .featured-creators {
+            margin-bottom: 60px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .creators-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+
+        .creator-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition-normal);
+        }
+
+        .creator-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+        }
+
+        .creator-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            border: 3px solid transparent;
+            background: var(--primary-gradient) border-box;
+        }
+
+        .creator-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .creator-handle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .creator-stats {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .follow-btn {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            width: 100%;
+        }
+
+        .follow-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .content-moods {
+            margin-bottom: 60px;
+        }
+
+        .moods-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+        }
+
+        .mood-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .mood-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-glow);
+            transform: scale(1.05);
+        }
+
+        .mood-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .mood-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .curated-collections {
+            margin-bottom: 60px;
+        }
+
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .collection-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .collection-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+        }
+
+        .collection-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            height: 160px;
+            overflow: hidden;
+        }
+
+        .collection-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .collection-info {
+            padding: 16px;
+        }
+
+        .collection-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .collection-meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 1200px) {
+            .category-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .creators-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .moods-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .creators-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .moods-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .moods-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="search-wrapper mx-auto">
+                    <div class="search-container">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control search-input"
+                            placeholder="Search content, creators, prompts...">
+                    </div>
+                </div>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/explore}"><i
+                                class="bi bi-compass me-1"></i> Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/trending}"><i class="bi bi-fire me-1"></i>
+                            Trending</a></li>
+                    <li class="nav-item ms-2"><a th:href="@{/signin}" class="btn btn-glow"><i
+                                class="bi bi-box-arrow-in-right me-1"></i> Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="explore-section">
+        <div class="container">
+            <div class="explore-header">
+                <h1><i class="bi bi-compass me-2"></i>Explore <span class="text-gradient">Categories</span></h1>
+                <p>Discover viral content organized by category, mood, and style. Find exactly what inspires you.</p>
+            </div>
+
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1686191128892-3b37add4b844?w=400" alt="AI Art"></div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-stars"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">AI Art</h3><span class="category-count">12.4K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=400" alt="Nature"></div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-tree"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Nature</h3><span class="category-count">8.9K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400" alt="Travel"></div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-airplane"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Travel</h3><span class="category-count">15.2K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400" alt="Ocean"></div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-water"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Ocean</h3><span class="category-count">6.7K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400" alt="Mountains">
+                    </div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-snow"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Mountains</h3><span class="category-count">5.3K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400" alt="Abstract">
+                    </div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-palette"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Abstract</h3><span class="category-count">9.1K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover"><img
+                            src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400" alt="Forest"></div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-brightness-high"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Golden Hour</h3><span class="category-count">7.8K posts</span>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-cover" style="background:linear-gradient(135deg,#667eea,#764ba2);"></div>
+                    <div class="category-overlay">
+                        <div class="category-icon"><i class="bi bi-film"></i></div>
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">Reels</h3><span class="category-count">21.5K posts</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-moods">
+                <div class="section-header">
+                    <h2><i class="bi bi-emoji-smile me-2"></i>Browse by Mood</h2>
+                </div>
+                <div class="moods-grid">
+                    <div class="mood-card">
+                        <div class="mood-emoji">😌</div>
+                        <div class="mood-name">Calm</div>
+                    </div>
+                    <div class="mood-card">
+                        <div class="mood-emoji">🔥</div>
+                        <div class="mood-name">Energetic</div>
+                    </div>
+                    <div class="mood-card">
+                        <div class="mood-emoji">✨</div>
+                        <div class="mood-name">Dreamy</div>
+                    </div>
+                    <div class="mood-card">
+                        <div class="mood-emoji">🎨</div>
+                        <div class="mood-name">Creative</div>
+                    </div>
+                    <div class="mood-card">
+                        <div class="mood-emoji">💪</div>
+                        <div class="mood-name">Motivated</div>
+                    </div>
+                    <div class="mood-card">
+                        <div class="mood-emoji">🌙</div>
+                        <div class="mood-name">Night Vibes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-creators">
+                <div class="section-header">
+                    <h2><i class="bi bi-person-badge me-2"></i>Featured Creators</h2><a href="#"
+                        class="btn btn-outline-light btn-sm">View All</a>
+                </div>
+                <div class="creators-grid">
+                    <div class="creator-card"><img src="https://i.pravatar.cc/100?img=1" alt="" class="creator-avatar">
+                        <h4 class="creator-name">Sarah Chen</h4><span class="creator-handle">@ai_dreamweaver</span>
+                        <div class="creator-stats"><span><strong>45K</strong> followers</span><span><strong>892</strong>
+                                posts</span></div><button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="creator-card"><img src="https://i.pravatar.cc/100?img=2" alt="" class="creator-avatar">
+                        <h4 class="creator-name">Alex Rivera</h4><span class="creator-handle">@cinematicvibes</span>
+                        <div class="creator-stats"><span><strong>38K</strong> followers</span><span><strong>654</strong>
+                                posts</span></div><button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="creator-card"><img src="https://i.pravatar.cc/100?img=3" alt="" class="creator-avatar">
+                        <h4 class="creator-name">Maya Patel</h4><span class="creator-handle">@naturelens</span>
+                        <div class="creator-stats"><span><strong>62K</strong>
+                                followers</span><span><strong>1.2K</strong> posts</span></div><button
+                            class="follow-btn">Follow</button>
+                    </div>
+                    <div class="creator-card"><img src="https://i.pravatar.cc/100?img=4" alt="" class="creator-avatar">
+                        <h4 class="creator-name">Jordan Lee</h4><span class="creator-handle">@lofi_beats</span>
+                        <div class="creator-stats"><span><strong>28K</strong> followers</span><span><strong>445</strong>
+                                posts</span></div><button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="creator-card"><img src="https://i.pravatar.cc/100?img=5" alt="" class="creator-avatar">
+                        <h4 class="creator-name">Emma Wilson</h4><span class="creator-handle">@abstract_art</span>
+                        <div class="creator-stats"><span><strong>51K</strong> followers</span><span><strong>789</strong>
+                                posts</span></div><button class="follow-btn">Follow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="curated-collections">
+                <div class="section-header">
+                    <h2><i class="bi bi-collection me-2"></i>Curated Collections</h2><a th:href="@{/collections}"
+                        class="btn btn-outline-light btn-sm">View All</a>
+                </div>
+                <div class="collections-grid">
+                    <div class="collection-card">
+                        <div class="collection-preview">
+                            <img src="https://images.unsplash.com/photo-1686191128892-3b37add4b844?w=200" alt="">
+                            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=200" alt="">
+                            <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=200" alt="">
+                        </div>
+                        <div class="collection-info">
+                            <h4 class="collection-title">Best of AI Art 2026</h4><span class="collection-meta">128 items
+                                • Curated by @viralprompt</span>
+                        </div>
+                    </div>
+                    <div class="collection-card">
+                        <div class="collection-preview">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200" alt="">
+                            <img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=200" alt="">
+                            <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=200" alt="">
+                        </div>
+                        <div class="collection-info">
+                            <h4 class="collection-title">Stunning Landscapes</h4><span class="collection-meta">256 items
+                                • Curated by @naturephoto</span>
+                        </div>
+                    </div>
+                    <div class="collection-card">
+                        <div class="collection-preview">
+                            <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=200" alt="">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200" alt="">
+                            <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=200" alt="">
+                        </div>
+                        <div class="collection-info">
+                            <h4 class="collection-title">Cinematic Moments</h4><span class="collection-meta">94 items •
+                                Curated by @filmmakers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="margin-top:0;padding-top:0;border-top:none;">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

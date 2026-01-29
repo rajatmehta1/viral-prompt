@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+    <style>
+        .trending-section {
+            padding: calc(var(--nav-height) + 40px) 0 var(--section-padding);
+        }
+
+        .trending-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .trending-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .trending-header p {
+            color: var(--text-secondary);
+        }
+
+        .time-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .time-tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .time-tab:hover {
+            border-color: var(--border-glow);
+            color: var(--text-primary);
+        }
+
+        .time-tab.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .trending-card {
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition-normal);
+            display: flex;
+        }
+
+        .trending-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .trending-rank {
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .rank-1 {
+            color: #fbbf24;
+        }
+
+        .rank-2 {
+            color: #94a3b8;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+        }
+
+        .trending-thumb {
+            width: 160px;
+            height: 160px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .trending-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-slow);
+        }
+
+        .trending-card:hover .trending-thumb img {
+            transform: scale(1.1);
+        }
+
+        .trending-info {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .trending-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .trending-creator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .trending-creator img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+        }
+
+        .trending-creator span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .trending-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .trending-stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .trending-stat i {
+            font-size: 1rem;
+        }
+
+        .trending-badge {
+            background: var(--ai-gradient);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .category-section {
+            margin-top: 60px;
+        }
+
+        .category-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hashtag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .hashtag-cloud h3 {
+            width: 100%;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .hashtag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: var(--text-secondary);
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .hashtag:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .hashtag.hot {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #f87171;
+        }
+
+        @media (max-width: 992px) {
+            .trending-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .trending-card {
+                flex-direction: column;
+            }
+
+            .trending-thumb {
+                width: 100%;
+                height: 200px;
+            }
+
+            .trending-rank {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i
+                                class="bi bi-house-door-fill me-1"></i> Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="explore.html"><i class="bi bi-compass me-1"></i>
+                            Explore</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="trending.html"><i class="bi bi-fire me-1"></i>
+                            Trending</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prompt-library.html"><i class="bi bi-book me-1"></i>
+                            Prompts</a></li>
+                    <li class="nav-item ms-2"><a href="signin.html" class="btn btn-glow"><i
+                                class="bi bi-box-arrow-in-right me-1"></i> Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="trending-section">
+        <div class="container">
+            <div class="trending-header">
+                <h1><i class="bi bi-fire text-danger me-2"></i>Trending <span class="text-gradient">Now</span></h1>
+                <p>Discover what's going viral right now across all categories</p>
+            </div>
+            <div class="time-tabs">
+                <button class="time-tab active">Today</button>
+                <button class="time-tab">This Week</button>
+                <button class="time-tab">This Month</button>
+                <button class="time-tab">All Time</button>
+            </div>
+            <div class="trending-grid">
+                <div class="trending-card">
+                    <div class="trending-rank rank-1">#1</div>
+                    <div class="trending-thumb"><img
+                            src="https://images.unsplash.com/photo-1686191128892-3b37add4b844?w=300" alt="Trending">
+                    </div>
+                    <div class="trending-info">
+                        <h3 class="trending-title">Cyberpunk City Dreamscape</h3>
+                        <div class="trending-creator"><img src="https://i.pravatar.cc/40?img=1"
+                                alt=""><span>@digital_artist</span></div>
+                        <div class="trending-stats">
+                            <span class="trending-stat"><i class="bi bi-eye"></i> 2.4M</span>
+                            <span class="trending-stat"><i class="bi bi-heart-fill text-danger"></i> 89K</span>
+                            <span class="trending-badge"><i class="bi bi-stars me-1"></i>AI</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-card">
+                    <div class="trending-rank rank-2">#2</div>
+                    <div class="trending-thumb"><img
+                            src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=300" alt="Trending">
+                    </div>
+                    <div class="trending-info">
+                        <h3 class="trending-title">Mountain Sunrise Timelapse</h3>
+                        <div class="trending-creator"><img src="https://i.pravatar.cc/40?img=2"
+                                alt=""><span>@nature_films</span></div>
+                        <div class="trending-stats">
+                            <span class="trending-stat"><i class="bi bi-eye"></i> 1.8M</span>
+                            <span class="trending-stat"><i class="bi bi-heart-fill text-danger"></i> 72K</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-card">
+                    <div class="trending-rank rank-3">#3</div>
+                    <div class="trending-thumb"><img
+                            src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300" alt="Trending">
+                    </div>
+                    <div class="trending-info">
+                        <h3 class="trending-title">Abstract Flow Art</h3>
+                        <div class="trending-creator"><img src="https://i.pravatar.cc/40?img=3"
+                                alt=""><span>@abstract_mind</span></div>
+                        <div class="trending-stats">
+                            <span class="trending-stat"><i class="bi bi-eye"></i> 1.2M</span>
+                            <span class="trending-stat"><i class="bi bi-heart-fill text-danger"></i> 54K</span>
+                            <span class="trending-badge"><i class="bi bi-stars me-1"></i>AI</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-card">
+                    <div class="trending-rank">#4</div>
+                    <div class="trending-thumb"><img
+                            src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=300" alt="Trending">
+                    </div>
+                    <div class="trending-info">
+                        <h3 class="trending-title">Ocean Waves ASMR</h3>
+                        <div class="trending-creator"><img src="https://i.pravatar.cc/40?img=4"
+                                alt=""><span>@calm_vibes</span></div>
+                        <div class="trending-stats">
+                            <span class="trending-stat"><i class="bi bi-eye"></i> 980K</span>
+                            <span class="trending-stat"><i class="bi bi-heart-fill text-danger"></i> 41K</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-card">
+                    <div class="trending-rank">#5</div>
+                    <div class="trending-thumb"><img
+                            src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=300" alt="Trending">
+                    </div>
+                    <div class="trending-info">
+                        <h3 class="trending-title">Forest Meditation</h3>
+                        <div class="trending-creator"><img src="https://i.pravatar.cc/40?img=5"
+                                alt=""><span>@zen_master</span></div>
+                        <div class="trending-stats">
+                            <span class="trending-stat"><i class="bi bi-eye"></i> 750K</span>
+                            <span class="trending-stat"><i class="bi bi-heart-fill text-danger"></i> 38K</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trending-card">
+                    <div class="trending-rank">#6</div>
+                    <div class="trending-thumb"><img
+                            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300" alt="Trending">
+                    </div>
+                    <div class="trending-info">
+                        <h3 class="trending-title">Alpine Adventure</h3>
+                        <div class="trending-creator"><img src="https://i.pravatar.cc/40?img=6"
+                                alt=""><span>@explorer</span></div>
+                        <div class="trending-stats">
+                            <span class="trending-stat"><i class="bi bi-eye"></i> 620K</span>
+                            <span class="trending-stat"><i class="bi bi-heart-fill text-danger"></i> 29K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hashtag-cloud">
+                <h3><i class="bi bi-hash me-2"></i>Trending Hashtags</h3>
+                <span class="hashtag hot">#aiart</span>
+                <span class="hashtag hot">#viralvideo</span>
+                <span class="hashtag">#aesthetic</span>
+                <span class="hashtag">#cinematography</span>
+                <span class="hashtag hot">#midjourney</span>
+                <span class="hashtag">#nature</span>
+                <span class="hashtag">#lofi</span>
+                <span class="hashtag">#motivation</span>
+                <span class="hashtag hot">#sora</span>
+                <span class="hashtag">#travel</span>
+                <span class="hashtag">#reels</span>
+                <span class="hashtag">#photography</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="margin-top:0;padding-top:0;border-top:none;">
+                <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.time-tab').forEach(t => t.addEventListener('click', function () {
+            document.querySelectorAll('.time-tab').forEach(x => x.classList.remove('active'));
+            this.classList.add('active');
+        }));
+    </script>
+</body>
+
+</html>
