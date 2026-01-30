@@ -90,4 +90,19 @@ public class PageController {
     public String trending() {
         return "trending";
     }
+
+    @GetMapping("/prompt-detail")
+    public String promptDetail() {
+        return "prompt-detail";
+    }
+
+    @GetMapping("/submit")
+    public String submit() {
+        return "submit";
+    }
+
+    @GetMapping("/top-rated")
+    public String topRated() {
+        return "top-rated";
+    }
 }
