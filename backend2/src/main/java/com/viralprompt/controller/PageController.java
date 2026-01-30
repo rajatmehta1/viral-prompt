@@ -1,13 +1,25 @@
 package com.viralprompt.controller;
 
+import com.viralprompt.service.ContentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PageController {
 
+    private ContentService contentService;
+
+    @Autowired
+    public PageController(ContentService contentService) {
+        this.contentService = contentService;
+    }
+
     @GetMapping("/")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("trendingItems", contentService.getTrendingContent());
         return "index";
     }
 
