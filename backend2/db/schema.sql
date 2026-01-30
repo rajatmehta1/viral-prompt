@@ -84,10 +84,11 @@ CREATE TABLE interactions (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable RLS (Row Level Security) if using Supabase client directly, 
+-- Enable RLS (Row Level Security) if using Supabase client directly,
 -- but since we use Spring Boot with Service Role / Connection String, we'll keep it simple for now.
 -- However, adding basic indexes is good practice.
 CREATE INDEX idx_content_items_category ON content_items(category_id);
 CREATE INDEX idx_content_items_author ON content_items(author_id);
 CREATE INDEX idx_prompts_author ON prompts(author_id);
 CREATE INDEX idx_collections_owner ON collections(owner_id);
+
