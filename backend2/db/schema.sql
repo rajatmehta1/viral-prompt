@@ -4,6 +4,7 @@
 CREATE TABLE profiles (
     id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
+    email TEXT,
     display_name TEXT,
     avatar_url TEXT,
     bio TEXT,
@@ -24,7 +25,7 @@ CREATE TABLE categories (
 
 -- Content Items
 CREATE TYPE content_type AS ENUM ('IMAGE', 'VIDEO', 'REEL', 'AI');
-CREATE TYPE platform_type AS ENUM ('TIKTOK', 'INSTAGRAM', 'YOUTUBE', 'OTHER');
+CREATE TYPE platform_type AS ENUM ('INSTAGRAM', 'TIKTOK', 'YOUTUBE', 'MIDJOURNEY', 'SUNO', 'DALLE', 'KLING', 'RUNWAY', 'OTHER');
 
 CREATE TABLE content_items (
     id BIGSERIAL PRIMARY KEY,
@@ -32,6 +33,8 @@ CREATE TABLE content_items (
     description TEXT,
     media_url TEXT,
     thumbnail_url TEXT,
+    embed_url TEXT,
+    tags TEXT,
     author_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
     category_id BIGINT REFERENCES categories(id) ON DELETE SET NULL,
     type content_type DEFAULT 'IMAGE',
@@ -40,6 +43,17 @@ CREATE TABLE content_items (
     likes_count BIGINT DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Embed Prompt Steps (AI workflow steps for content creation)
+CREATE TABLE embed_prompt_steps (
+    id BIGSERIAL PRIMARY KEY,
+    content_item_id BIGINT REFERENCES content_items(id) ON DELETE CASCADE NOT NULL,
+    ai_tool TEXT NOT NULL,
+    prompt_text TEXT,
+    parameters TEXT,
+    step_order INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Prompts
@@ -92,3 +106,54 @@ CREATE INDEX idx_content_items_author ON content_items(author_id);
 CREATE INDEX idx_prompts_author ON prompts(author_id);
 CREATE INDEX idx_collections_owner ON collections(owner_id);
 
+
+create table youtube_videos (
+     id BIGSERIAL PRIMARY KEY,
+     user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+     video_id TEXT NOT NULL,
+     is_short BOOLEAN DEFAULT FALSE,
+     created_at TIMESTAMPTZ DEFAULT NOW()
+)
+
+CREATE TABLE youtube_videos (
+                                id BIGSERIAL PRIMARY KEY,
+                                user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+
+    -- Video identifiers
+                                video_id TEXT NOT NULL,
+                                url TEXT,
+
+    -- Video metadata
+                                title TEXT,
+                                description TEXT,
+                                channel TEXT,
+                                duration TEXT,
+                                is_short BOOLEAN DEFAULT FALSE,
+
+    -- Metrics
+                                views BIGINT DEFAULT 0,
+                                likes BIGINT DEFAULT 0,
+                                comments INTEGER DEFAULT 0,
+
+    -- Additional fields
+                                extracted_prompt TEXT,
+                                search_query TEXT,
+                                platform TEXT DEFAULT 'YouTube',
+
+    -- Timestamps
+                                published_at TIMESTAMPTZ,
+                                created_at TIMESTAMPTZ DEFAULT NOW(),
+
+    -- Optional: Add a unique constraint to prevent duplicates
+                                CONSTRAINT unique_video_per_user UNIQUE(video_id)
+);
+
+-- Optional: Add indexes for better query performance
+CREATE INDEX idx_youtube_videos_user_id ON youtube_videos(user_id);
+CREATE INDEX idx_youtube_videos_video_id ON youtube_videos(video_id);
+CREATE INDEX idx_youtube_videos_published_at ON youtube_videos(published_at);
+
+
+-- Convert ENUM columns to TEXT
+ALTER TABLE content_items ALTER COLUMN type TYPE TEXT;
+ALTER TABLE content_items ALTER COLUMN platform TYPE TEXT;

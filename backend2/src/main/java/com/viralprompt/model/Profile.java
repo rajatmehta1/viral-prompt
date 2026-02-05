@@ -22,6 +22,9 @@ public class Profile {
     @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(unique = true)
+    private String email;
+
     private String displayName;
     private String avatarUrl;
     private String bio;

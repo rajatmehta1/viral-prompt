@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Embed and share content from Instagram, TikTok, YouTube, Midjourney, Suno and more">
+    <title>Embed Content | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <style>
+        .embed-section {
+            padding: calc(var(--nav-height) + 40px) 0 var(--section-padding);
+            min-height: 100vh;
+        }
+
+        .embed-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .embed-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .platform-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .platform-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 20px 16px;
+            border-radius: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            text-align: center;
+        }
+
+        .platform-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: var(--border-glow);
+            transform: translateY(-3px);
+        }
+
+        .platform-btn.active {
+            border-color: transparent;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .platform-btn i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .platform-btn span {
+            font-size: 0.9rem;
+        }
+
+        /* Platform-specific colors */
+        .platform-btn[data-platform="INSTAGRAM"].active {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            box-shadow: 0 8px 25px rgba(225, 48, 108, 0.4);
+        }
+
+        .platform-btn[data-platform="TIKTOK"].active {
+            background: linear-gradient(135deg, #00f2ea 0%, #ff0050 100%);
+            box-shadow: 0 8px 25px rgba(0, 242, 234, 0.3);
+        }
+
+        .platform-btn[data-platform="YOUTUBE"].active {
+            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+        }
+
+        .platform-btn[data-platform="MIDJOURNEY"].active {
+            background: linear-gradient(135deg, #0066ff 0%, #00ccff 100%);
+            box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4);
+        }
+
+        .platform-btn[data-platform="SUNO"].active {
+            background: linear-gradient(135deg, #ff6b35 0%, #f72585 100%);
+            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.4);
+        }
+
+        .platform-btn[data-platform="DALLE"].active {
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            box-shadow: 0 8px 25px rgba(16, 163, 127, 0.4);
+        }
+
+        .platform-btn[data-platform="KLING"].active {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
+        }
+
+        .platform-btn[data-platform="RUNWAY"].active {
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .form-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .form-control,
+        .form-select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--text-primary);
+            transition: var(--transition-normal);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: var(--border-glow);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+            color: white;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .embed-preview {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--text-muted);
+            margin-top: 10px;
+            transition: var(--transition-normal);
+            overflow: hidden;
+        }
+
+        .embed-preview.has-content {
+            border-style: solid;
+            border-color: var(--border-glow);
+        }
+
+        .embed-preview iframe {
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        /* Prompts Section */
+        .prompts-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+
+        .prompts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .prompts-header h5 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prompts-header h5 i {
+            color: #a855f7;
+        }
+
+        .prompt-entry {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: var(--transition-normal);
+        }
+
+        .prompt-entry:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+
+        .prompt-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .prompt-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .remove-prompt-btn {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-prompt-btn:hover {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: rgba(255, 59, 48, 0.4);
+        }
+
+        .add-prompt-btn {
+            background: rgba(168, 85, 247, 0.1);
+            border: 2px dashed rgba(168, 85, 247, 0.3);
+            color: #a855f7;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-prompt-btn:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-submit {
+            padding: 16px 32px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        /* Workflow indicator */
+        .workflow-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding: 12px 16px;
+            background: rgba(168, 85, 247, 0.05);
+            border-radius: 10px;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .workflow-step i {
+            font-size: 14px;
+        }
+
+        .workflow-arrow {
+            color: var(--text-muted);
+        }
+
+        /* Tool buttons */
+        .tool-select {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .tool-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .tool-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .alert-success-custom {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            color: #34c759;
+        }
+
+        .alert-error-custom {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: #ff3b30;
+        }
+
+        @media (max-width: 768px) {
+            .embed-card {
+                padding: 24px;
+            }
+
+            .platform-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .platform-btn {
+                padding: 16px 12px;
+            }
+
+            .platform-btn i {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house-door-fill me-1"></i>
+                            Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/index2.html}"><i
+                                class="bi bi-play-btn-fill me-1"></i>
+                            Live Feed</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/top-rated}"><i class="bi bi-star me-1"></i> Top
+                            Rated</a></li>
+                    <li class="nav-item ms-2"><a th:href="@{/submit}" class="btn btn-glow"><i
+                                class="bi bi-plus-lg me-1"></i> Create</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="embed-section">
+        <div class="container">
+            <div class="embed-header">
+                <h1 class="hero-title">Embed <span class="text-gradient">Content</span></h1>
+                <p class="hero-subtitle">Share viral content from your favorite platforms along with the prompts that
+                    created them</p>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${successMessage}" class="alert alert-success-custom mb-4" role="alert">
+                <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error-custom mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${errorMessage}"></span>
+            </div>
+
+            <div class="embed-card">
+                <form th:action="@{/embed-content}" th:object="${embedContent}" method="post" id="embedForm">
+                    <!-- Platform Selection -->
+                    <div class="mb-4">
+                        <label class="form-label mb-3">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>Select Content Platform
+                        </label>
+                        <input type="hidden" name="platform" id="platform" value="INSTAGRAM">
+                        <div class="platform-selector">
+                            <button type="button" class="platform-btn active" data-platform="INSTAGRAM">
+                                <i class="bi bi-instagram"></i>
+                                <span>Instagram</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="TIKTOK">
+                                <i class="bi bi-tiktok"></i>
+                                <span>TikTok</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="YOUTUBE">
+                                <i class="bi bi-youtube"></i>
+                                <span>YouTube</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="MIDJOURNEY">
+                                <i class="bi bi-stars"></i>
+                                <span>Midjourney</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="SUNO">
+                                <i class="bi bi-music-note-beamed"></i>
+                                <span>Suno</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="DALLE">
+                                <i class="bi bi-palette"></i>
+                                <span>DALL·E</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="KLING">
+                                <i class="bi bi-camera-video"></i>
+                                <span>Kling</span>
+                            </button>
+                            <button type="button" class="platform-btn" data-platform="RUNWAY">
+                                <i class="bi bi-film"></i>
+                                <span>Runway</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Content URL/Embed -->
+                    <div class="mb-4">
+                        <label class="form-label" id="urlLabel">
+                            <i class="bi bi-instagram me-2"></i>Instagram Reel URL or Embed Code
+                        </label>
+                        <textarea class="form-control" th:field="*{embedUrl}" id="embedInput" rows="3"
+                            placeholder="Paste the URL or embed code here..."></textarea>
+                        <div class="form-text mt-2" id="urlHelp">
+                            <i class="bi bi-info-circle me-1"></i>Paste the share URL from Instagram (e.g.,
+                            https://www.instagram.com/reel/...)
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-eye me-2"></i>Preview
+                        </label>
+                        <div class="embed-preview" id="embedPreview">
+                            <i class="bi bi-image fs-1 mb-2"></i>
+                            <span>Content preview will appear here</span>
+                        </div>
+                    </div>
+
+                    <!-- Title and Category -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" th:field="*{title}"
+                                placeholder="Give your content a catchy title..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" th:field="*{category}">
+                                <option value="" selected>Select Category</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.name}" th:text="${cat.name}">
+                                    Category</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Cinematic">Cinematic</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Music">Music</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Art & Design">Art & Design</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Lifestyle">Lifestyle</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Tech">Tech</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Comedy">Comedy</option>
+                                <option th:if="${#lists.isEmpty(categories)}" value="Tutorial">Tutorial</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" th:field="*{description}" rows="2"
+                            placeholder="Describe your content and what makes it special..."></textarea>
+                    </div>
+
+                    <!-- Prompts Section -->
+                    <div class="prompts-section">
+                        <div class="prompts-header">
+                            <h5><i class="bi bi-magic"></i> AI Prompts Used</h5>
+                            <span class="badge bg-secondary" id="promptCount">1 prompt</span>
+                        </div>
+                        <p class="text-secondary small mb-3">Share the prompts used to create this content. Add multiple
+                            prompts if you used different AI tools in your creative workflow.</p>
+
+                        <div id="promptsContainer">
+                            <!-- Initial prompt entry -->
+                            <div class="prompt-entry" data-prompt-index="0">
+                                <div class="prompt-entry-header">
+                                    <div class="prompt-step">
+                                        <div class="step-number">1</div>
+                                        <div>
+                                            <div class="fw-medium text-white">Step 1</div>
+                                            <div class="small text-secondary">Initial creation</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small">AI Tool Used</label>
+                                    <input type="hidden" name="promptSteps[0].aiTool" id="aiTool0" value="Midjourney">
+                                    <div class="tool-select">
+                                        <button type="button" class="tool-btn active" data-tool="Midjourney"
+                                            data-index="0">Midjourney</button>
+                                        <button type="button" class="tool-btn" data-tool="DALL·E"
+                                            data-index="0">DALL·E</button>
+                                        <button type="button" class="tool-btn" data-tool="Stable Diffusion"
+                                            data-index="0">Stable Diffusion</button>
+                                        <button type="button" class="tool-btn" data-tool="Kling"
+                                            data-index="0">Kling</button>
+                                        <button type="button" class="tool-btn" data-tool="Runway"
+                                            data-index="0">Runway</button>
+                                        <button type="button" class="tool-btn" data-tool="Suno"
+                                            data-index="0">Suno</button>
+                                        <button type="button" class="tool-btn" data-tool="ChatGPT"
+                                            data-index="0">ChatGPT</button>
+                                        <button type="button" class="tool-btn" data-tool="Claude"
+                                            data-index="0">Claude</button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small">Prompt Text</label>
+                                    <textarea class="form-control" name="promptSteps[0].promptText" rows="3"
+                                        placeholder="Enter the exact prompt you used..."></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="form-label small">Settings/Parameters (Optional)</label>
+                                    <input type="text" class="form-control" name="promptSteps[0].parameters"
+                                        placeholder="e.g., --ar 9:16 --v 6 --style raw">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="add-prompt-btn" id="addPromptBtn">
+                            <i class="bi bi-plus-circle"></i> Add Another Prompt Step
+                        </button>
+
+                        <!-- Workflow visualization -->
+                        <div class="workflow-indicator" id="workflowIndicator">
+                            <span class="small text-secondary me-2">Workflow:</span>
+                            <div class="workflow-step">
+                                <i class="bi bi-stars"></i> Midjourney
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="mt-4 mb-4">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-control" th:field="*{tags}"
+                            placeholder="e.g., viral, ai-art, midjourney, cinematic">
+                        <div class="form-text mt-2">
+                            <i class="bi bi-tags me-1"></i>Separate tags with commas
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-glow btn-submit">
+                        <i class="bi bi-share me-2"></i> Share Content
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container text-center">
+            <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Platform configurations
+        const platformConfig = {
+            INSTAGRAM: {
+                label: 'Instagram Reel URL or Embed Code',
+                help: 'Paste the share URL from Instagram (e.g., https://www.instagram.com/reel/...)',
+                icon: 'bi-instagram'
+            },
+            TIKTOK: {
+                label: 'TikTok Video URL or Embed Code',
+                help: 'Paste the share URL from TikTok (e.g., https://www.tiktok.com/@user/video/...)',
+                icon: 'bi-tiktok'
+            },
+            YOUTUBE: {
+                label: 'YouTube Video URL',
+                help: 'Paste the YouTube video URL (e.g., https://youtube.com/watch?v=... or Shorts URL)',
+                icon: 'bi-youtube'
+            },
+            MIDJOURNEY: {
+                label: 'Image URL from Midjourney',
+                help: 'Paste the direct image URL or Discord CDN link',
+                icon: 'bi-stars'
+            },
+            SUNO: {
+                label: 'Suno Song URL or Embed',
+                help: 'Paste the share URL from Suno (e.g., https://suno.ai/song/...)',
+                icon: 'bi-music-note-beamed'
+            },
+            DALLE: {
+                label: 'DALL·E Image URL',
+                help: 'Paste the image URL from DALL·E or upload your generated image',
+                icon: 'bi-palette'
+            },
+            KLING: {
+                label: 'Kling Video URL',
+                help: 'Paste the video URL from Kling AI',
+                icon: 'bi-camera-video'
+            },
+            RUNWAY: {
+                label: 'Runway Video URL',
+                help: 'Paste the video URL from Runway Gen-2/Gen-3',
+                icon: 'bi-film'
+            }
+        };
+
+        // Platform selection
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const platform = this.dataset.platform;
+                const config = platformConfig[platform];
+
+                // Update hidden input
+                document.getElementById('platform').value = platform;
+
+                document.getElementById('urlLabel').innerHTML = `<i class="bi ${config.icon} me-2"></i>${config.label}`;
+                document.getElementById('urlHelp').innerHTML = `<i class="bi bi-info-circle me-1"></i>${config.help}`;
+
+                // Clear preview
+                document.getElementById('embedPreview').innerHTML = `
+                    <i class="bi bi-image fs-1 mb-2"></i>
+                    <span>Content preview will appear here</span>
+                `;
+                document.getElementById('embedPreview').classList.remove('has-content');
+            });
+        });
+
+        // Tool button selection within prompts
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('tool-btn')) {
+                const index = e.target.dataset.index;
+                const container = e.target.closest('.tool-select');
+                container.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                // Update hidden input
+                document.getElementById('aiTool' + index).value = e.target.dataset.tool;
+                updateWorkflowIndicator();
+            }
+        });
+
+        // Add new prompt
+        let promptCount = 1;
+        document.getElementById('addPromptBtn').addEventListener('click', function () {
+            const index = promptCount;
+            promptCount++;
+            const promptEntry = document.createElement('div');
+            promptEntry.className = 'prompt-entry';
+            promptEntry.dataset.promptIndex = index;
+            promptEntry.innerHTML = `
+                <div class="prompt-entry-header">
+                    <div class="prompt-step">
+                        <div class="step-number">${promptCount}</div>
+                        <div>
+                            <div class="fw-medium text-white">Step ${promptCount}</div>
+                            <div class="small text-secondary">Additional processing</div>
+                        </div>
+                    </div>
+                    <button type="button" class="remove-prompt-btn" onclick="removePrompt(this)">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">AI Tool Used</label>
+                    <input type="hidden" name="promptSteps[${index}].aiTool" id="aiTool${index}" value="Kling">
+                    <div class="tool-select">
+                        <button type="button" class="tool-btn" data-tool="Midjourney" data-index="${index}">Midjourney</button>
+                        <button type="button" class="tool-btn" data-tool="DALL·E" data-index="${index}">DALL·E</button>
+                        <button type="button" class="tool-btn" data-tool="Stable Diffusion" data-index="${index}">Stable Diffusion</button>
+                        <button type="button" class="tool-btn active" data-tool="Kling" data-index="${index}">Kling</button>
+                        <button type="button" class="tool-btn" data-tool="Runway" data-index="${index}">Runway</button>
+                        <button type="button" class="tool-btn" data-tool="Suno" data-index="${index}">Suno</button>
+                        <button type="button" class="tool-btn" data-tool="ChatGPT" data-index="${index}">ChatGPT</button>
+                        <button type="button" class="tool-btn" data-tool="Claude" data-index="${index}">Claude</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small">Prompt Text</label>
+                    <textarea class="form-control" name="promptSteps[${index}].promptText" rows="3" placeholder="Enter the exact prompt you used..."></textarea>
+                </div>
+
+                <div>
+                    <label class="form-label small">Settings/Parameters (Optional)</label>
+                    <input type="text" class="form-control" name="promptSteps[${index}].parameters" placeholder="e.g., 5 seconds, high quality">
+                </div>
+            `;
+            document.getElementById('promptsContainer').appendChild(promptEntry);
+            updatePromptCount();
+            updateWorkflowIndicator();
+        });
+
+        // Remove prompt
+        function removePrompt(btn) {
+            btn.closest('.prompt-entry').remove();
+            renumberPrompts();
+            updatePromptCount();
+            updateWorkflowIndicator();
+        }
+
+        // Renumber prompts after removal
+        function renumberPrompts() {
+            document.querySelectorAll('.prompt-entry').forEach((entry, index) => {
+                const num = index + 1;
+                entry.dataset.promptIndex = index;
+                entry.querySelector('.step-number').textContent = num;
+                entry.querySelector('.prompt-step > div > .fw-medium').textContent = `Step ${num}`;
+            });
+            promptCount = document.querySelectorAll('.prompt-entry').length;
+        }
+
+        // Update prompt count badge
+        function updatePromptCount() {
+            const count = document.querySelectorAll('.prompt-entry').length;
+            document.getElementById('promptCount').textContent = `${count} prompt${count !== 1 ? 's' : ''}`;
+        }
+
+        // Update workflow indicator
+        function updateWorkflowIndicator() {
+            const tools = [];
+            document.querySelectorAll('.prompt-entry').forEach(entry => {
+                const activeBtn = entry.querySelector('.tool-btn.active');
+                if (activeBtn) {
+                    tools.push(activeBtn.dataset.tool);
+                }
+            });
+
+            const indicator = document.getElementById('workflowIndicator');
+            if (tools.length === 0) {
+                indicator.innerHTML = '<span class="small text-secondary">No tools selected</span>';
+                return;
+            }
+
+            const toolIcons = {
+                'Midjourney': 'bi-stars',
+                'DALL·E': 'bi-palette',
+                'Stable Diffusion': 'bi-image',
+                'Kling': 'bi-camera-video',
+                'Runway': 'bi-film',
+                'Suno': 'bi-music-note-beamed',
+                'ChatGPT': 'bi-chat-dots',
+                'Claude': 'bi-robot'
+            };
+
+            let html = '<span class="small text-secondary me-2">Workflow:</span>';
+            tools.forEach((tool, index) => {
+                const icon = toolIcons[tool] || 'bi-gear';
+                html += `<div class="workflow-step"><i class="bi ${icon}"></i> ${tool}</div>`;
+                if (index < tools.length - 1) {
+                    html += '<i class="bi bi-arrow-right workflow-arrow"></i>';
+                }
+            });
+            indicator.innerHTML = html;
+        }
+
+        // Generate preview from URL
+        document.getElementById('embedInput').addEventListener('input', function () {
+            const value = this.value.trim();
+            const preview = document.getElementById('embedPreview');
+
+            if (!value) {
+                preview.innerHTML = `
+                    <i class="bi bi-image fs-1 mb-2"></i>
+                    <span>Content preview will appear here</span>
+                `;
+                preview.classList.remove('has-content');
+                return;
+            }
+
+            // Try to generate preview based on platform
+            const activePlatform = document.querySelector('.platform-btn.active').dataset.platform;
+
+            if (activePlatform === 'YOUTUBE' && value.includes('youtube.com') || value.includes('youtu.be')) {
+                let videoId = '';
+                if (value.includes('v=')) {
+                    videoId = value.split('v=')[1].split('&')[0];
+                } else if (value.includes('youtu.be/')) {
+                    videoId = value.split('youtu.be/')[1].split('?')[0];
+                } else if (value.includes('/shorts/')) {
+                    videoId = value.split('/shorts/')[1].split('?')[0];
+                }
+                if (videoId) {
+                    preview.innerHTML = `<iframe width="100%" height="280" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    preview.classList.add('has-content');
+                }
+            } else if ((activePlatform === 'MIDJOURNEY' || activePlatform === 'DALLE') && (value.startsWith('http') && (value.includes('.png') || value.includes('.jpg') || value.includes('.webp') || value.includes('cdn.discordapp.com')))) {
+                preview.innerHTML = `<img src="${value}" alt="AI Generated" style="max-width: 100%; max-height: 280px; object-fit: contain;">`;
+                preview.classList.add('has-content');
+            } else {
+                preview.innerHTML = `
+                    <i class="bi bi-check-circle fs-1 mb-2 text-success"></i>
+                    <span>Content URL detected</span>
+                    <small class="text-muted mt-2">Full preview available after submission</small>
+                `;
+                preview.classList.add('has-content');
+            }
+        });
+    </script>
+</body>
+
+</html>

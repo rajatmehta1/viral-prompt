@@ -28,6 +28,11 @@ public class ContentItem {
     private String mediaUrl;
     private String thumbnailUrl;
 
+    @Column(columnDefinition = "TEXT")
+    private String embedUrl;
+
+    private String tags;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Profile author;
@@ -37,12 +42,16 @@ public class ContentItem {
     private Category category;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "TEXT")
     private ContentType type;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "TEXT")
     private PlatformType platform;
 
+    @Builder.Default
     private Long viewsCount = 0L;
+    @Builder.Default
     private Long likesCount = 0L;
 
     @CreationTimestamp
@@ -56,6 +65,7 @@ public class ContentItem {
     }
 
     public enum PlatformType {
-        TIKTOK, INSTAGRAM, YOUTUBE, OTHER
+        INSTAGRAM, TIKTOK, YOUTUBE, MIDJOURNEY, SUNO, DALLE, KLING, RUNWAY, OTHER
     }
 }
+

@@ -921,3 +921,66 @@ body {
         max-width: 300px;
     }
 }
+
+/*Updated for containers*/
+
+/* Responsive Embeds Styles */
+.embed-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #000;
+    border-radius: 12px;
+    margin-bottom: 0;
+}
+
+.embed-container iframe,
+.embed-container blockquote {
+    width: 100% !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+/* Specific Platform Adjustments */
+.tiktok-embed {
+    min-width: unset !important;
+    width: 100% !important;
+}
+
+.instagram-media {
+    min-width: unset !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.youtube-shorts-wrapper {
+    aspect-ratio: 9/16;
+    width: 100%;
+}
+
+.youtube-shorts-wrapper iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.youtube-video-wrapper {
+    aspect-ratio: 16/9;
+    width: 100%;
+}
+
+.youtube-video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.midjourney-container {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.midjourney-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}

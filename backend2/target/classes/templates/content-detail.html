@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" th:content="${content.description}">
+    <title th:text="${content.title + ' | Viral Prompt'}">Content | Viral Prompt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+    <style>
+        .content-section {
+            padding: calc(var(--nav-height) + 40px) 0 var(--section-padding);
+            min-height: 100vh;
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .platform-badge.instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+        }
+
+        .platform-badge.tiktok {
+            background: linear-gradient(135deg, #00f2ea 0%, #ff0050 100%);
+            color: white;
+        }
+
+        .platform-badge.youtube {
+            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+            color: white;
+        }
+
+        .platform-badge.midjourney {
+            background: linear-gradient(135deg, #0066ff 0%, #00ccff 100%);
+            color: white;
+        }
+
+        .platform-badge.suno {
+            background: linear-gradient(135deg, #ff6b35 0%, #f72585 100%);
+            color: white;
+        }
+
+        .platform-badge.dalle {
+            background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+            color: white;
+        }
+
+        .platform-badge.kling {
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .platform-badge.runway {
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            color: white;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .content-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .content-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content-embed {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content-embed iframe {
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        .content-embed img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        .content-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .tags-section {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tag-pill {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #a855f7;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Prompts Section */
+        .prompts-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+
+        .prompts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .prompts-header h5 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .prompts-header h5 i {
+            color: #a855f7;
+        }
+
+        .prompt-step {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .prompt-step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        .step-tool {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #a855f7;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .prompt-text {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .prompt-params {
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .prompt-params code {
+            background: rgba(168, 85, 247, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #a855f7;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .action-buttons .btn {
+            padding: 12px 24px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <div class="brand-icon me-2"><i class="bi bi-lightning-charge-fill"></i></div>
+                <span class="fw-bold">Viral<span class="text-gradient">Prompt</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house-door-fill me-1"></i>
+                            Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/top-rated}"><i class="bi bi-star me-1"></i> Top
+                            Rated</a></li>
+                    <li class="nav-item ms-2"><a th:href="@{/embed-content}" class="btn btn-glow"><i
+                                class="bi bi-plus-lg me-1"></i> Embed Content</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="content-section">
+        <div class="container">
+            <div class="content-card">
+                <div class="content-header">
+                    <!-- Platform Badge -->
+                    <span class="platform-badge" th:classappend="${content.platform.name().toLowerCase()}"
+                        th:switch="${content.platform.name()}">
+                        <i th:case="'INSTAGRAM'" class="bi bi-instagram"></i>
+                        <i th:case="'TIKTOK'" class="bi bi-tiktok"></i>
+                        <i th:case="'YOUTUBE'" class="bi bi-youtube"></i>
+                        <i th:case="'MIDJOURNEY'" class="bi bi-stars"></i>
+                        <i th:case="'SUNO'" class="bi bi-music-note-beamed"></i>
+                        <i th:case="'DALLE'" class="bi bi-palette"></i>
+                        <i th:case="'KLING'" class="bi bi-camera-video"></i>
+                        <i th:case="'RUNWAY'" class="bi bi-film"></i>
+                        <i th:case="*" class="bi bi-globe"></i>
+                        <span th:text="${content.platform.name()}">Platform</span>
+                    </span>
+
+                    <h1 class="content-title" th:text="${content.title}">Content Title</h1>
+
+                    <div class="content-meta">
+                        <span><i class="bi bi-eye"></i> <span th:text="${content.viewsCount}">0</span> views</span>
+                        <span><i class="bi bi-heart-fill text-danger"></i> <span
+                                th:text="${content.likesCount}">0</span> likes</span>
+                        <span th:if="${content.category != null}">
+                            <i class="bi bi-folder"></i> <span th:text="${content.category.name}">Category</span>
+                        </span>
+                        <span th:if="${content.createdAt != null}">
+                            <i class="bi bi-clock"></i> <span
+                                th:text="${#temporals.format(content.createdAt, 'MMM dd, yyyy')}">Date</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Content Embed -->
+                <div class="content-embed" th:if="${content.embedUrl != null}">
+                    <div th:utext="${content.embedUrl.contains('<') ? content.embedUrl : ''}"></div>
+                    <img th:if="${content.embedUrl.endsWith('.png') or content.embedUrl.endsWith('.jpg') or content.embedUrl.endsWith('.webp')}"
+                        th:src="${content.embedUrl}" alt="Embedded content">
+                    <a th:if="${not content.embedUrl.contains('<') and not (content.embedUrl.endsWith('.png') or content.embedUrl.endsWith('.jpg') or content.embedUrl.endsWith('.webp'))}"
+                        th:href="${content.embedUrl}" target="_blank" class="btn btn-glow">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>View Original Content
+                    </a>
+                </div>
+
+                <!-- Description -->
+                <div class="content-description" th:if="${content.description != null}"
+                    th:text="${content.description}">
+                    Content description goes here...
+                </div>
+
+                <!-- Tags -->
+                <div class="tags-section" th:if="${content.tags != null and content.tags != ''}">
+                    <span class="tag-pill" th:each="tag : ${#strings.arraySplit(content.tags, ',')}"
+                        th:text="'#' + ${#strings.trim(tag)}">#tag</span>
+                </div>
+
+                <!-- Prompts Section -->
+                <div class="prompts-section" th:if="${promptSteps != null and !promptSteps.isEmpty()}">
+                    <div class="prompts-header">
+                        <h5><i class="bi bi-magic"></i> AI Prompts Used</h5>
+                        <span class="badge bg-secondary"
+                            th:text="${#lists.size(promptSteps)} + ' prompt' + (${#lists.size(promptSteps)} > 1 ? 's' : '')">1
+                            prompt</span>
+                    </div>
+
+                    <div class="prompt-step" th:each="step, iterStat : ${promptSteps}">
+                        <div class="prompt-step-header">
+                            <div class="step-number" th:text="${iterStat.count}">1</div>
+                            <span class="step-tool" th:text="${step.aiTool}">Midjourney</span>
+                            <button type="button" class="copy-btn ms-auto"
+                                th:onclick="'copyPrompt(' + ${iterStat.index} + ')'">
+                                <i class="bi bi-clipboard me-1"></i> Copy
+                            </button>
+                        </div>
+                        <div class="prompt-text" th:id="'prompt-' + ${iterStat.index}" th:text="${step.promptText}">
+                            The prompt text will appear here...
+                        </div>
+                        <div class="prompt-params" th:if="${step.parameters != null and step.parameters != ''}">
+                            <i class="bi bi-gear me-1"></i> Parameters: <code
+                                th:text="${step.parameters}">--ar 9:16</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a th:href="@{/}" class="btn btn-glow"
+                        style="background: transparent; border: 1px solid rgba(255,255,255,0.2);">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Home
+                    </a>
+                    <a th:href="@{/embed-content}" class="btn btn-glow">
+                        <i class="bi bi-plus-lg me-1"></i> Share Your Content
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="container text-center">
+            <p>&copy; 2026 ViralPrompt. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyPrompt(index) {
+            const promptText = document.getElementById('prompt-' + index).textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const btn = document.querySelector(`[onclick="copyPrompt(${index})"]`);
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check me-1"></i> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
