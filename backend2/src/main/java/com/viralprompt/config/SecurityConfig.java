@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 // Static resources and public pages
-                .requestMatchers("/", "/ai-music", "/ai-books", "/ai-video-generator", "/caption-generator","/embed-content").permitAll()
+                .requestMatchers("/", "/ai-music", "/ai-books", "/ai-video-generator", "/caption-generator","/embed-content","/content/**").permitAll()
                 .requestMatchers("/explore", "/prompt-library", "/reel-creator", "/script-writer", "/trending").permitAll()
                 .requestMatchers("/prompt-detail", "/top-rated", "/signin", "/signup", "/error**", "/webjars/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/assets/**").permitAll()
